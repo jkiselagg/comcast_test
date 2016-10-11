@@ -1,0 +1,9 @@
+DISCUSSION
+---
+The nmap command provides all the confirmation of this installation that we need.
+
+It shows that http is redirected to https, with a self signed cert.  It shows the title of the page, and it shows that only 443, 80 and 22 are open.
+
+ODDITIES
+---
+554 and 7070 remain open, and it is unclear whyl  This authors best guess is that they are related to Linode's service infrastructure and are forced open via the VM Host.

@@ -1,0 +1,81 @@
+---
+
+- hosts: comcast-test
+
+  vars:
+    ssl_cert: /etc/ssl/server.crt
+    ssl_key: /etc/ssl/server.key
+
+  tasks:
+  - name: Install apache2
+    apt: name=apache2 update_cache=yes state=latest
+
+  - name: Install ufw
+    apt: package=ufw state=present
+
+  - name: Enable ufw
+    ufw: state=enabled
+
+  - name: Configure ufw defaults
+    ufw: direction={{ item.direction }} policy={{ item.policy }}
+    with_items:
+      - { direction: 'incoming', policy: 'deny' }
+      - { direction: 'outgoing', policy: 'allow' }
+    notify:
+      - restart ufw
+
+  - name: Configure ufw rules
+    ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+    with_items:
+      - { rule: 'limit', port: '{{ ssh_port | default("22") }}', proto: 'tcp' }
+      - { rule: 'allow', port: '80', proto: 'tcp' }
+      - { rule: 'allow', port: '443', proto: 'tcp' }
+    notify:
+      - restart ufw
+
+
+  - name: Enable mod_rewrite
+    apache2_module: name=rewrite state=present
+    notify:
+    - restart apache2
+
+  - name: Enable ssl_module
+    apache2_module: name=ssl state=present
+    notify:
+    - restart apache2
+
+  - name: Copy index.html to document root
+    copy: src=files/index.html dest=/var/www/html/index.html owner=root group=root mode=0644
+
+  - name: Enable HTTPS/SSL
+    command: a2ensite default-ssl
+    args:
+      creates: /etc/apache2/sites-enabled/default-ssl.conf
+    notify:
+      restart apache2
+
+  - name: create self-signed SSL cert
+    command: openssl req -new -nodes -x509 -subj "/C=US/ST=Oregon/L=Portland/O=IT/CN=${ansible_fqdn}" -days 3650 -keyout {{ ssl_key }} -out {{ ssl_cert }} -extensions v3_ca creates={{ ssl_cert }}
+    notify: restart apache2
+
+  - name: Replace with new cert 
+    lineinfile: dest=/etc/apache2/sites-available/default-ssl.conf regexp="snakeoil.pem"  line="SSLCertificateFile {{ ssl_cert }} " state=present 
+    notify: restart apache2
+
+
+  - name: New SSL Key
+    lineinfile: dest=/etc/apache2/sites-available/default-ssl.conf regexp="snakeoil.key"  line="SSLCertificateKeyFile {{ ssl_key }} " state=present
+    notify: restart apache2
+
+
+  - name: Redirect HTTP to HTTPS
+    lineinfile: dest=/etc/apache2/sites-enabled/000-default.conf regexp="DocumentRoot"  line="Redirect permanent / https://{{ ansible_eth0.ipv4.address }}/ " state=present
+    notify: restart apache2
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
+
+    - name: restart ufw
+      service: name=ufw state=restarted
+

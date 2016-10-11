@@ -1,0 +1,28 @@
+joe@joe-XU-1604:~/comcast-test/test$ ./test.sh 
+
+Starting Nmap 7.01 ( https://nmap.org ) at 2016-10-11 10:23 EDT
+Nmap scan report for li242-242.members.linode.com (173.255.232.242)
+Host is up (0.023s latency).
+Not shown: 995 filtered ports
+PORT     STATE SERVICE     VERSION
+22/tcp   open  ssh         OpenSSH 7.2p2 Ubuntu 4ubuntu2.1 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 87:ca:7e:be:d1:14:2a:f3:48:77:af:06:9a:45:8c:2a (RSA)
+|_  256 b5:c3:02:2a:4e:24:42:4e:3e:bb:e3:09:5a:74:c3:b1 (ECDSA)
+80/tcp   open  http        Apache httpd 2.4.18
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+|_http-title: Did not follow redirect to https://173.255.232.242/
+443/tcp  open  ssl/http    Apache httpd 2.4.18 ((Ubuntu))
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+|_http-title: Hello World
+| ssl-cert: Subject: commonName=${ansible_fqdn}/organizationName=IT/stateOrProvinceName=Oregon/countryName=US
+| Not valid before: 2016-10-11T05:03:17
+|_Not valid after:  2026-10-09T05:03:17
+|_ssl-date: TLS randomness does not represent time
+554/tcp  open  rtsp?
+7070/tcp open  realserver?
+Service Info: Host: ubuntu.members.linode.com; OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 205.00 seconds
+

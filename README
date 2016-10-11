@@ -1,0 +1,16 @@
+ENVIRONMENT
+---
+This script was developed on Xbuntu 16.04 using Ansible 2.0.0.2 
+
+The target system is an Ubuntu 16.04 hosted on Linode.
+
+Target system is located at 172.255.232.242
+
+KNOWN ISSUES
+---
+This script can only be run ONCE on a target system.  The "lineinfile" ansible directive seems to have an undocumented feature where subsequent runs will append the "line" to the end of the file if it doesn't find the specified regex.  I thought that it was only supposed to do this if the "lineafter='EOF'" was specified, but apparently not.
+
+Remediation to this would be to use Ansibles Jenja template system.
+
+Although the ufw directives are clear and only include 22, 80 and 443, for some reason 554 and 7070 still appear to be open.  This is likely due to Linode injecting management features, and is not representative of the ansible playbook or the underlying ufw module.
+
