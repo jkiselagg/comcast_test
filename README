@@ -4,7 +4,15 @@ This script was developed on Xbuntu 16.04 using Ansible 2.0.0.2
 
 The target system is an Ubuntu 16.04 hosted on Linode.
 
-Target system is located at 173.255.232.242
+Target system is located at 45.79.179.147
+
+TO RUN
+---
+This script assumes a target group of "comcast-test" in your ansible hosts, and must be run on the target system as root.  Be sure to specify -u root in your ansible playbook, and either use -k for password or have the ssh key added to your ssh keyring.
+
+An example run using a password (bad form i know) would be
+ansible-playbook comcast-test.xml -u root -k
+
 
 KNOWN ISSUES
 ---
